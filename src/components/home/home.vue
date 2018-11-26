@@ -4,7 +4,7 @@
             <el-row>
                 <el-col :span="4"><a href=""><img src="../../assets/logo.png" alt=""></a></el-col>
                 <el-col :span="16"><h3 class="middle">电商后台管理系统</h3></el-col>
-                <el-col :span="4"><a href="" class="logout">退出</a></el-col>
+                <el-col :span="4"><a href="" class="logout" @click.prevent="logout()">退出</a></el-col>
             </el-row>
         </el-header>
         <el-container>
@@ -89,6 +89,13 @@ export default {
             this.$router.push({name: 'login'})
         }
     },
+    methods: {
+        logout() {
+            localStorage.clear();
+            this.$message.success('退出成功');
+            this.$router.push({name: 'login'})
+        }
+    }
 
 }
 </script>
