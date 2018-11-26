@@ -24,22 +24,36 @@
       };
     },
     methods: {
-        login_check() {
-            this.$http.post('login',this.formdata)
-                .then( res => {
-                    const {data,meta:{msg,status}} = res.data
-                    if(status === 200) {
-                        //提示登录成功
-                         this.$message.success(msg)
-                        //跳转首页
-                        this.$router.push({name: 'home'})
-                    } else {
+        async login_check() {
+            const res = await this.$http.post('login',this.formdata)
+            const {data,meta:{msg,status}} = res.data
+            if(status === 200) {
+                 //本地存储data.token,
+                 localStorage.setItem('token',data.token)
+                //跳转首页
+                this.$router.push({name: 'home'})
+                //提示登录成功
+                 this.$message.success(msg)
+            } else {
                         //提示错误信息
                          this.$message.error(msg)
                         
-                    }
-                    console.log(res)
-                })
+            }
+            // this.$http.post('login',this.formdata)
+            //     .then( res => {
+            //         const {data,meta:{msg,status}} = res.data
+            //         if(status === 200) {
+            //             //提示登录成功
+            //              this.$message.success(msg)
+            //             //跳转首页
+            //             this.$router.push({name: 'home'})
+            //         } else {
+            //             //提示错误信息
+            //              this.$message.error(msg)
+                        
+            //         }
+            //         console.log(res)
+            //     })
         }
     }
   }
