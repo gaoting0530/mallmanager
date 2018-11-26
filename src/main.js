@@ -6,8 +6,10 @@ import 'element-ui/lib/theme-chalk/index.css'
 import App from './App'
 import router from './router'
 import '@/assets/css/reset.css'
+import MyPlugin from '@/plugins/http.js'
 
 Vue.use(ElementUI)
+Vue.use(MyPlugin)
 
 Vue.config.productionTip = false
 
