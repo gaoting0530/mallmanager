@@ -8,6 +8,8 @@ import App from './App'
 import router from './router'
 import '@/assets/css/reset.css'
 import MyPlugin from '@/plugins/http.js'
+//组建选项所在的对象
+import MyBread from '@/components/cuscom/myBread.vue'
 
 Vue.use(ElementUI)
 Vue.use(MyPlugin)
@@ -17,6 +19,9 @@ Vue.config.productionTip = false
 Vue.filter('fmtdate',(v) => {
   return moment(v).format('YYYY-MM-DD')
 })
+//全局自定义组件
+Vue.component('my-bread',MyBread)
+
 new Vue({
   el: '#app',
   router,

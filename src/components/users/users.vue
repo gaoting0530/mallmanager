@@ -289,8 +289,7 @@ export default {
         },
         //获取所有用户信息
         async getUsersList() {
-            const AUTH_TOKEN = localStorage.getItem('token');
-            this.$http.defaults.headers.common['Authorization'] = AUTH_TOKEN;
+            //授权交给axios设置
 
             const res = await this.$http.get(`users?query=${this.query}&pagenum=${this.pagenum}&pagesize=${this.pagesize}`)
             const {data:{total,users},meta: {msg,status}} = res.data;
