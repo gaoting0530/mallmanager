@@ -68,7 +68,7 @@
                     <template slot-scope="scope">
                             <el-button @click="showDialogEdit(scope.row)" size="mini" plain type="primary" icon="el-icon-edit" circle></el-button>
                             <el-button @click="delUser(scope.row.id)" size="mini" plain type="danger" icon="el-icon-delete" circle></el-button>
-                            <el-button size="mini" plain type="success" icon="el-icon-check" circle></el-button>
+                            <el-button @click="checkShow(scope.row)" size="mini" plain type="success" icon="el-icon-check" circle></el-button>
             
                     </template>
                 </el-table-column>
@@ -121,6 +121,25 @@
                 <el-button type="primary" @click="addUser()">确 定</el-button>
             </div>
         </el-dialog>
+        <el-dialog title="分配角色" :visible.sync="dialogFormRoles" class="overblank">
+            <el-form :model="form">
+                <el-form-item label="用户名" :label-width="formLabelWidth">
+                {{RoleName}}
+                </el-form-item>
+                <el-form-item label="角色" :label-width="formLabelWidth">
+                    <el-select v-model="RoleId" placeholder="请选择活动区域">
+                        <el-option label="请选择" :value="-1" disabled></el-option>
+                        <el-option :label="item.roleName" :value="item.id"  v-for="(item,i) in roles" :key="i" ></el-option>
+                    </el-select>
+                </el-form-item>
+
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogFormRoles = false">取 消</el-button>
+                <el-button type="primary" @click="setRole()">确 定</el-button>
+            </div>
+        </el-dialog>
+
     </el-card>
 </template>
 
@@ -129,25 +148,53 @@ export default {
     data() {
         return {
             query:'',
+            userId : -1,
+            RoleId: -1,
+            RoleName: '',
             pagenum:1,
             pagesize:2,
             total: -1,
             tableData: [],
+            roles: [],
             dialogFormAdd: false,
             dialogFormEdit: false,
+            dialogFormRoles: false,
             form: {
                 username: '',
                 password: '',
                 email: '',
                 mobile: ''
             },
-            formLabelWidth: '120px'
+            formLabelWidth: '100px'
         }
     },
     created() {
         this.getUsersList();
+       
     },
     methods: {
+        //分配角色功能
+       async setRole() {
+            //users/:id/role
+            const res = await this.$http.put(`users/${this.userId}/role`,{rid:this.RoleId})
+            if(res.data.meta.status === 200) {
+                this.$message.success(res.data.meta.msg)
+            }
+            this.dialogFormRoles = false;
+
+        },
+        //当前角色显示
+        async checkShow(user) {
+            //获取角色列表
+            const res1 = await this.$http.get(`roles`);
+            this.roles = res1.data.data;
+            //获取RoleId
+            this.dialogFormRoles = true;
+            this.RoleName = user.username;
+            const res = await this.$http.get(`users/${user.id}`);
+            this.RoleId = res.data.data.rid;
+            this.userId = user.id;
+        },
         //用户状态修改
         async changeState(user) {
             const res = await this.$http.put(`users/${user.id}/state/${user.mg_state}`);
