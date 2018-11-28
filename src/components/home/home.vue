@@ -11,7 +11,7 @@
             <el-aside width="200px" class="aside">
                  <el-menu
                     :unique-opened="true"
-                    router="true"
+                    :router="true"
                     default-active="2">
                     <el-submenu index="1">
                         <template slot="title">
@@ -87,7 +87,7 @@
 <script>
 export default {
     data () {
-
+        return {}
     },
     beforeCreate() {
         const token = localStorage.getItem('token');
