@@ -57,8 +57,21 @@
                         <el-input v-model="item.attr_vals"></el-input>
                     </el-form-item>
                 </el-tab-pane>
-                <el-tab-pane name="4" label="商品图片">定时任务补偿</el-tab-pane>
-                <el-tab-pane name="5" label="商品内容">定时任务补偿</el-tab-pane>
+                <el-tab-pane name="4" label="商品图片">
+                    <el-upload
+                        action="http://localhost:8888/api/private/v1/upload"
+                        :headers="headers"
+                        :on-success="handleSuccess"
+                        :on-remove="handleRemove"
+                        list-type="picture">
+                        <el-button size="small" type="primary">点击上传</el-button>
+                        <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+                    </el-upload>
+                </el-tab-pane>
+                <el-tab-pane name="5" label="商品内容">
+                    <el-button type="primary" class="addbtn" @click="addGoods()">添加商品</el-button>
+                    <quill-editor></quill-editor>
+                </el-tab-pane>
 
             </el-tabs>
         </el-form>
@@ -67,8 +80,15 @@
 </template>
 
 <script>
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
+import { quillEditor } from 'vue-quill-editor'
 
 export default {
+    components: {
+        quillEditor
+    },
     data() {
         return {
             active: '1',
@@ -79,8 +99,8 @@ export default {
                 goods_number : '',
                 goods_weight : '',
                 goods_introduce : '',
-                pics : '',
-                attrs : ''
+                pics : [],
+                attrs : []
 
             },
             //联级选择器相关数据
@@ -94,12 +114,39 @@ export default {
             },
             arrPlayParams: [],//动态参数列表
             arrStaticParams: [],//静态参数列表
+            headers:{
+                //设置上传文件的头部信息
+                Authorization: localStorage.getItem('token')
+            }
         }
     },
     created() {
         this.getGoods();
     },
     methods: {
+        //添加商品功能
+        addGoods() {
+            console.log(this.arrPlayParams);
+            console.log(this.arrStaticParams);
+            const arr = [...this.arrPlayParams,...this.arrStaticParams];
+            console.log(arr);
+
+        },
+        //图片移除时候触发的方法
+        handleRemove(file, fileList) {
+            // console.log(file, fileList);
+            //file.response.data.tmp_path---当前图片的临时路径
+            const Index = this.form.pics.findIndex(item => {
+                item.pic === file.response.data.tmp_path
+            })
+            this.form.pics.splice(Index,1);
+        },
+        //图片上传成功时候触发的方法
+        handleSuccess(file) {
+            // console.log(file);
+            //file.data.tmp_path -- 图片上传成功的临时路径
+            this.form.pics.push({pic: file.data.tmp_path}); 
+        },
         //当选项发生变化时触发该方法
         async changTab() {
             //如果切换到第二目录，且三级目录选择
@@ -115,8 +162,8 @@ export default {
                 this.arrPlayParams.forEach(item => {
                     item.attr_vals = item.attr_vals.split(',')
                 })
-                console.log(res);
-            } else if(this.active === '3') {
+                this.form.goods_cat = this.selectedOptions.join(',');
+            } else if (this.active === '3') {
                 if(this.selectedOptions.length !== 3) {
                     this.$message.warning('请选择第三级参数');
                     return;
@@ -127,6 +174,7 @@ export default {
                 console.log(res);
 
             }
+             
 
         },
         // 获取商品数据列表
@@ -152,5 +200,11 @@ export default {
 }
 .my_tabs {
     margin-top: 20px;
+}
+.ql-editor p {
+    min-height: 260px;
+}
+.addbtn {
+    margin-bottom: 10px;
 }
 </style>
