@@ -125,11 +125,24 @@ export default {
     },
     methods: {
         //添加商品功能
-        addGoods() {
-            console.log(this.arrPlayParams);
-            console.log(this.arrStaticParams);
-            const arr = [...this.arrPlayParams,...this.arrStaticParams];
-            console.log(arr);
+        async addGoods() {
+            var arr1 = this.arrPlayParams.map(item => {
+                item.attr_vals = item.attr_vals.join(',')
+                return {
+                    attr_id: item.attr_id,
+                    attr_value: item.attr_vals
+                }
+            })
+            var arr2 = this.arrStaticParams.map(item => {
+                return {
+                     attr_id: item.attr_id,
+                    attr_value: item.attr_vals
+                }
+            })
+            const arr = [...arr1,...arr2];
+            const res = await this.$http.post(`goods`,this.form);
+            this.$router.push({name: 'goods'})
+            this.$message.success(res.data.meta.msg)
 
         },
         //图片移除时候触发的方法
